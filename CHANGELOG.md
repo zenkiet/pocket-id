@@ -1,3 +1,10 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.33.0...v) (2025-02-16)
+
+
+### Features
+
+* add LDAP group membership attribute ([#236](https://github.com/pocket-id/pocket-id/issues/236)) ([39b46e9](https://github.com/pocket-id/pocket-id/commit/39b46e99a9b930ea39cf640c3080530cfff5be6e))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.32.0...v) (2025-02-14)
 
 
