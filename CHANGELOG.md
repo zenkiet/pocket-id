@@ -1,3 +1,16 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.34.0...v) (2025-02-19)
+
+
+### Features
+
+* add ability to upload a profile picture ([#244](https://github.com/pocket-id/pocket-id/issues/244)) ([652ee6a](https://github.com/pocket-id/pocket-id/commit/652ee6ad5d6c46f0d35c955ff7bb9bdac6240ca6))
+
+
+### Bug Fixes
+
+* app config strings starting with a number are parsed incorrectly ([816c198](https://github.com/pocket-id/pocket-id/commit/816c198a42c189cb1f2d94885d2e3623e47e2848))
+* emails do not get rendered correctly in Gmail ([dca9e7a](https://github.com/pocket-id/pocket-id/commit/dca9e7a11a3ba5d3b43a937f11cb9d16abad2db5))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.33.0...v) (2025-02-16)
 
 
