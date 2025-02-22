@@ -2,6 +2,7 @@ package common
 
 import (
 	"log"
+	"net/url"
 
 	"github.com/caarlos0/env/v11"
 	_ "github.com/joho/godotenv/autoload"
@@ -60,5 +61,13 @@ func init() {
 
 	if EnvConfig.DbProvider == DbProviderSqlite && EnvConfig.SqliteDBPath == "" {
 		log.Fatal("Missing SQLITE_DB_PATH environment variable")
+	}
+
+	parsedAppUrl, err := url.Parse(EnvConfig.AppURL)
+	if err != nil {
+		log.Fatal("PUBLIC_APP_URL is not a valid URL")
+	}
+	if parsedAppUrl.Path != "" {
+		log.Fatal("PUBLIC_APP_URL must not contain a path")
 	}
 }
