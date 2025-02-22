@@ -292,7 +292,7 @@ func (s *LdapService) SaveProfilePicture(userId string, pictureString string) er
 
 	} else {
 		// If the photo is a string, we assume that it's a binary string
-		reader = bytes.NewReader([]byte("pictureString"))
+		reader = bytes.NewReader([]byte(pictureString))
 	}
 
 	// Update the profile picture
