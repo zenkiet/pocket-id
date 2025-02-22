@@ -1,3 +1,11 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.35.0...v) (2025-02-22)
+
+
+### Bug Fixes
+
+* add validation that `PUBLIC_APP_URL` can't contain a path ([a6ae7ae](https://github.com/pocket-id/pocket-id/commit/a6ae7ae28713f7fc8018ae2aa7572986df3e1a5b))
+* binary profile picture can't be imported from LDAP ([840a672](https://github.com/pocket-id/pocket-id/commit/840a672fc35ca8476caf86d7efaba9d54bce86aa))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.34.0...v) (2025-02-19)
 
 
