@@ -172,7 +172,7 @@ func (uc *UserController) getCurrentUserProfilePictureHandler(c *gin.Context) {
 }
 
 func (uc *UserController) updateUserProfilePictureHandler(c *gin.Context) {
-	userID := c.GetString("userID")
+	userID := c.Param("id")
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
 		c.Error(err)
