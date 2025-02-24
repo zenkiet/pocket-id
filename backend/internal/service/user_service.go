@@ -128,6 +128,12 @@ func (s *UserService) DeleteUser(userID string) error {
 		return &common.LdapUserUpdateError{}
 	}
 
+	// Delete the profile picture
+	profilePicturePath := fmt.Sprintf("%s/profile-pictures/%s.png", common.EnvConfig.UploadPath, userID)
+	if err := os.Remove(profilePicturePath); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
 	return s.db.Delete(&user).Error
 }
 
