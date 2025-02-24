@@ -1,3 +1,11 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.35.1...v) (2025-02-24)
+
+
+### Bug Fixes
+
+* delete profile picture if user gets deleted ([9a167d4](https://github.com/pocket-id/pocket-id/commit/9a167d4076872e5e3e5d78d2a66ef7203ca5261b))
+* updating profile picture of other user updates own profile picture ([887c5e4](https://github.com/pocket-id/pocket-id/commit/887c5e462a50c8fb579ca6804f1a643d8af78fe8))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.35.0...v) (2025-02-22)
 
 
