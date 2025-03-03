@@ -1,3 +1,10 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.35.4...v) (2025-03-03)
+
+
+### Bug Fixes
+
+* profile picture orientation if image is rotated with EXIF ([1026ee4](https://github.com/pocket-id/pocket-id/commit/1026ee4f5b5c7fda78b65c94a5d0f899525defd1))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.35.3...v) (2025-03-01)
 
 
