@@ -1,3 +1,10 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.35.5...v) (2025-03-03)
+
+
+### Bug Fixes
+
+* support `LOGIN` authentication method for SMTP ([#292](https://github.com/pocket-id/pocket-id/issues/292)) ([2d733fc](https://github.com/pocket-id/pocket-id/commit/2d733fc79faefca23d54b22768029c3ba3427410))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.35.4...v) (2025-03-03)
 
 
