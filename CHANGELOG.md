@@ -1,3 +1,18 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.36.0...v) (2025-03-10)
+
+
+### Features
+
+* **account:** add ability to sign in with login code ([#271](https://github.com/pocket-id/pocket-id/issues/271)) ([eb1426e](https://github.com/pocket-id/pocket-id/commit/eb1426ed2684b5ddd185db247a8e082b28dfd014))
+* increase default item count per page ([a9713cf](https://github.com/pocket-id/pocket-id/commit/a9713cf6a1e3c879dc773889b7983e51bbe3c45b))
+
+
+### Bug Fixes
+
+* add back setup page ([6a8dd84](https://github.com/pocket-id/pocket-id/commit/6a8dd84ca9396ff3369385af22f7e1f081bec2b2))
+* add timeout to update check ([04efc36](https://github.com/pocket-id/pocket-id/commit/04efc3611568a0b0127b542b8cc252d9e783af46))
+* make sorting consistent around tables ([8e344f1](https://github.com/pocket-id/pocket-id/commit/8e344f1151628581b637692a1de0e48e7235a22d))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.35.6...v) (2025-03-06)
 
 
