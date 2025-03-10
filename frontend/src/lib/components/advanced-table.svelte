@@ -18,35 +18,21 @@
 		selectedIds = $bindable(),
 		withoutSearch = false,
 		selectionDisabled = false,
-		defaultSort,
 		onRefresh,
 		columns,
 		rows
 	}: {
 		items: Paginated<T>;
-		requestOptions?: SearchPaginationSortRequest;
+		requestOptions: SearchPaginationSortRequest;
 		selectedIds?: string[];
 		withoutSearch?: boolean;
 		selectionDisabled?: boolean;
-		defaultSort?: { column: string; direction: 'asc' | 'desc' };
 		onRefresh: (requestOptions: SearchPaginationSortRequest) => Promise<Paginated<T>>;
 		columns: { label: string; hidden?: boolean; sortColumn?: string }[];
 		rows: Snippet<[{ item: T }]>;
 	} = $props();
 
 	let searchValue = $state('');
-
-	if (!requestOptions) {
-		requestOptions = {
-			search: '',
-			sort: defaultSort,
-			pagination: {
-				page: items.pagination.currentPage,
-				limit: items.pagination.itemsPerPage
-			}
-		};
-	}
-
 	let availablePageSizes: number[] = [10, 20, 50, 100];
 
 	let allChecked = $derived.by(() => {
@@ -83,20 +69,20 @@
 	}
 
 	async function onPageChange(page: number) {
-		requestOptions!.pagination = { limit: items.pagination.itemsPerPage, page };
-		onRefresh(requestOptions!);
+		requestOptions.pagination = { limit: items.pagination.itemsPerPage, page };
+		onRefresh(requestOptions);
 	}
 
 	async function onPageSizeChange(size: number) {
-		requestOptions!.pagination = { limit: size, page: 1 };
-		onRefresh(requestOptions!);
+		requestOptions.pagination = { limit: size, page: 1 };
+		onRefresh(requestOptions);
 	}
 
 	async function onSort(column?: string, direction: 'asc' | 'desc' = 'asc') {
 		if (!column) return;
 
-		requestOptions!.sort = { column, direction };
-		onRefresh(requestOptions!);
+		requestOptions.sort = { column, direction };
+		onRefresh(requestOptions);
 	}
 </script>
 
