@@ -224,3 +224,10 @@ func (e *InvalidUUIDError) Error() string {
 }
 
 type InvalidEmailError struct{}
+
+type OneTimeAccessDisabledError struct{}
+
+func (e *OneTimeAccessDisabledError) Error() string {
+	return "One-time access is disabled"
+}
+func (e *OneTimeAccessDisabledError) HttpStatusCode() int { return http.StatusBadRequest }

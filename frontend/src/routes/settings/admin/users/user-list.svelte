@@ -14,7 +14,7 @@
 	import { LucideLink, LucidePencil, LucideTrash } from 'lucide-svelte';
 	import Ellipsis from 'lucide-svelte/icons/ellipsis';
 	import { toast } from 'svelte-sonner';
-	import OneTimeLinkModal from './one-time-link-modal.svelte';
+	import OneTimeLinkModal from '$lib/components/one-time-link-modal.svelte';
 
 	let {
 		users = $bindable(),
@@ -82,7 +82,7 @@
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end">
 					<DropdownMenu.Item onclick={() => (userIdToCreateOneTimeLink = item.id)}
-						><LucideLink class="mr-2 h-4 w-4" />One-time link</DropdownMenu.Item
+						><LucideLink class="mr-2 h-4 w-4" />Login Code</DropdownMenu.Item
 					>
 					<DropdownMenu.Item onclick={() => goto(`/settings/admin/users/${item.id}`)}
 						><LucidePencil class="mr-2 h-4 w-4" /> Edit</DropdownMenu.Item
