@@ -55,7 +55,13 @@
 			<Button class="w-full" href={'/login/alternative/code' + page.url.search}>Enter code</Button>
 		</div>
 	{:else}
-		<form onsubmit={requestEmail} class="w-full max-w-[450px]">
+		<form
+			onsubmit={(e) => {
+				e.preventDefault();
+				requestEmail();
+			}}
+			class="w-full max-w-[450px]"
+		>
 			<p class="text-muted-foreground mt-2" in:fade>
 				Enter your email address to receive an email with a login code.
 			</p>
