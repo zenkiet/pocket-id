@@ -1,3 +1,16 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.37.0...v) (2025-03-10)
+
+
+### Features
+
+* add env variable to disable update check ([31198fe](https://github.com/pocket-id/pocket-id/commit/31198feec2ae77dd6673c42b42002871ddd02d37))
+
+
+### Bug Fixes
+
+* redirection not correctly if signing in with email code ([e5ec264](https://github.com/pocket-id/pocket-id/commit/e5ec264bfd535752565bcc107099a9df5cb8aba7))
+* typo in account settings ([#307](https://github.com/pocket-id/pocket-id/issues/307)) ([c822192](https://github.com/pocket-id/pocket-id/commit/c8221921245deb3008f655740d1a9460dcdab2fc))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.36.0...v) (2025-03-10)
 
 
