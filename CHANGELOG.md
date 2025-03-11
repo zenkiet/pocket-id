@@ -1,3 +1,15 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.38.0...v) (2025-03-11)
+
+
+### Features
+
+* api key authentication ([#291](https://github.com/pocket-id/pocket-id/issues/291)) ([62915d8](https://github.com/pocket-id/pocket-id/commit/62915d863a4adc09cf467b75c414a045be43c2bb))
+
+
+### Bug Fixes
+
+* alternative login method link on mobile ([9ef2ddf](https://github.com/pocket-id/pocket-id/commit/9ef2ddf7963c6959992f3a5d6816840534e926e9))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.37.0...v) (2025-03-10)
 
 
