@@ -58,7 +58,7 @@
 						: `/login/alternative?redirect=${encodeURIComponent(
 								page.url.pathname + page.url.search
 							)}`}
-					class="text-muted-foreground mt-5 text-xs"
+					class="text-muted-foreground mt-7 flex justify-center text-xs"
 				>
 					Don't have access to your passkey?
 				</a>
