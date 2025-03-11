@@ -11,24 +11,14 @@
 	import { toast } from 'svelte-sonner';
 
 	let {
-		apiKeys: initialApiKeys
+		apiKeys,
+		requestOptions
 	}: {
 		apiKeys: Paginated<ApiKey>;
+		requestOptions: SearchPaginationSortRequest;
 	} = $props();
 
-	let apiKeys = $state<Paginated<ApiKey>>(initialApiKeys);
-	let requestOptions: SearchPaginationSortRequest | undefined = $state({
-		sort: {
-			column: 'lastUsedAt',
-			direction: 'desc'
-		}
-	});
 	const apiKeyService = new ApiKeyService();
-
-	// Update the local state whenever the prop changes
-	$effect(() => {
-		apiKeys = initialApiKeys;
-	});
 
 	function formatDate(dateStr: string | undefined) {
 		if (!dateStr) return 'Never';
@@ -54,11 +44,6 @@
 			}
 		});
 	}
-
-	$effect(() => {
-		// Initial load uses the server-side data
-		apiKeys = initialApiKeys;
-	});
 </script>
 
 <AdvancedTable
@@ -66,7 +51,6 @@
 	{requestOptions}
 	onRefresh={async (o) => (apiKeys = await apiKeyService.list(o))}
 	withoutSearch
-	defaultSort={{ column: 'lastUsedAt', direction: 'desc' }}
 	columns={[
 		{ label: 'Name', sortColumn: 'name' },
 		{ label: 'Description' },

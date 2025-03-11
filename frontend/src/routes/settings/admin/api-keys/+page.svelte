@@ -2,8 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import ApiKeyService from '$lib/services/api-key-service';
-	import type { ApiKey, ApiKeyCreate, ApiKeyResponse } from '$lib/types/api-key.type';
-	import type { Paginated } from '$lib/types/pagination.type';
+	import type { ApiKeyCreate, ApiKeyResponse } from '$lib/types/api-key.type';
 	import { axiosErrorToast } from '$lib/utils/error-util';
 	import { LucideMinus } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
@@ -12,7 +11,8 @@
 	import ApiKeyList from './api-key-list.svelte';
 
 	let { data } = $props();
-	let apiKeys = $state<Paginated<ApiKey>>(data);
+	let apiKeys = $state(data.apiKeys);
+	let apiKeysRequestOptions = $state(data.apiKeysRequestOptions);
 
 	const apiKeyService = new ApiKeyService();
 	let expandAddApiKey = $state(false);
@@ -24,26 +24,12 @@
 			apiKeyResponse = response;
 
 			// After creation, reload the list of API keys
-			const updatedKeys = await apiKeyService.list();
-			apiKeys = updatedKeys;
+			apiKeys = await apiKeyService.list(apiKeysRequestOptions);
 
 			return true;
 		} catch (e) {
 			axiosErrorToast(e);
 			return false;
-		}
-	}
-
-	function handleDialogClose(open: boolean) {
-		if (!open) {
-			apiKeyResponse = null;
-			// Refresh the list when dialog closes
-			apiKeyService
-				.list()
-				.then((keys) => {
-					apiKeys = keys;
-				})
-				.catch(axiosErrorToast);
 		}
 	}
 </script>
@@ -82,8 +68,8 @@
 		<Card.Title>Manage API Keys</Card.Title>
 	</Card.Header>
 	<Card.Content>
-		<ApiKeyList {apiKeys} />
+		<ApiKeyList {apiKeys} requestOptions={apiKeysRequestOptions} />
 	</Card.Content>
 </Card.Root>
 
-<ApiKeyDialog bind:apiKeyResponse onOpenChange={handleDialogClose} />
+<ApiKeyDialog bind:apiKeyResponse />

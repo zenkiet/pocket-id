@@ -5,12 +5,16 @@
 	import type { ApiKeyResponse } from '$lib/types/api-key.type';
 
 	let {
-		apiKeyResponse = $bindable(),
-		onOpenChange
+		apiKeyResponse = $bindable()
 	}: {
 		apiKeyResponse: ApiKeyResponse | null;
-		onOpenChange: (open: boolean) => void;
 	} = $props();
+
+	function onOpenChange(open: boolean) {
+		if (!open) {
+			apiKeyResponse = null;
+		}
+	}
 </script>
 
 <Dialog.Root open={!!apiKeyResponse} {onOpenChange}>
