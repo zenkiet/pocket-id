@@ -1,3 +1,15 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.40.1...v) (2025-03-18)
+
+
+### Features
+
+* **profile-picture:** allow reset of profile picture ([#355](https://github.com/pocket-id/pocket-id/issues/355)) ([8f14618](https://github.com/pocket-id/pocket-id/commit/8f146188d57b5c08a4c6204674c15379232280d8))
+
+
+### Bug Fixes
+
+* own avatar not loading ([#351](https://github.com/pocket-id/pocket-id/issues/351)) ([0423d35](https://github.com/pocket-id/pocket-id/commit/0423d354f533d2ff4fd431859af3eea7d4d7044f))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.40.0...v) (2025-03-16)
 
 
