@@ -25,14 +25,14 @@ import (
 )
 
 const (
-	// Path in the data/keys folder where the key is stored
+	// PrivateKeyFile is the path in the data/keys folder where the key is stored
 	// This is a JSON file containing a key encoded as JWK
 	PrivateKeyFile = "jwt_private_key.json"
 
-	// Size, in bits, of the RSA key to generate if none is found
+	// RsaKeySize is the size, in bits, of the RSA key to generate if none is found
 	RsaKeySize = 2048
 
-	// Usage for the private keys, for the "use" property
+	// KeyUsageSigning is the usage for the private keys, for the "use" property
 	KeyUsageSigning = "sig"
 )
 
@@ -142,8 +142,14 @@ func (s *JwtService) SetKey(privateKey jwk.Key) error {
 		return fmt.Errorf("private key is not valid: %w", err)
 	}
 
-	// Set the private key in the object
+	// Set the private key and key id in the object
 	s.privateKey = privateKey
+
+	keyId, ok := privateKey.KeyID()
+	if !ok {
+		return errors.New("key object does not contain a key ID")
+	}
+	s.keyId = keyId
 
 	// Create and encode a JWKS containing the public key
 	publicKey, err := s.GetPublicJWK()
@@ -424,7 +430,6 @@ func SaveKeyJWK(key jwk.Key, path string) error {
 }
 
 // generateRandomKeyID generates a random key ID.
-// It is used for newly-generated keys
 func generateRandomKeyID() (string, error) {
 	buf := make([]byte, 8)
 	_, err := io.ReadFull(rand.Reader, buf)
