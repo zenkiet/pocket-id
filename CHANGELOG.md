@@ -1,3 +1,10 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.41.0...v) (2025-03-18)
+
+
+### Features
+
+* store keys as JWK on disk ([#339](https://github.com/pocket-id/pocket-id/issues/339)) ([a7c9741](https://github.com/pocket-id/pocket-id/commit/a7c9741802667811c530ef4e6313b71615ec6a9b))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.40.1...v) (2025-03-18)
 
 
