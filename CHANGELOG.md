@@ -1,3 +1,10 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.42.0...v) (2025-03-18)
+
+
+### Bug Fixes
+
+* kid not added to JWTs ([f7e36a4](https://github.com/pocket-id/pocket-id/commit/f7e36a422ea6b5327360c9a13308ae408ff7fffe))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.41.0...v) (2025-03-18)
 
 
