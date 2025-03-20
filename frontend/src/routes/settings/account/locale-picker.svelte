@@ -8,8 +8,8 @@
 	const currentLocale = getLocale();
 
 	const locales = {
-		en: 'English',
-		nl: 'Nederlands'
+		'en-US': 'English',
+		'nl-NL': 'Nederlands'
 	};
 
 	function updateLocale(locale: Locale) {
