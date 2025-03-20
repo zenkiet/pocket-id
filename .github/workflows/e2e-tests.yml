@@ -2,6 +2,7 @@ name: E2E Tests
 on:
   push:
     branches: [main]
+    branches-ignore: [i18n_crowdin]
     paths-ignore:
       - "docs/**"
       - "**.md"
