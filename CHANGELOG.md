@@ -1,3 +1,10 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.43.0...v) (2025-03-20)
+
+
+### Bug Fixes
+
+* wrong base locale causes crash ([3120ebf](https://github.com/pocket-id/pocket-id/commit/3120ebf239b90f0bc0a0af33f30622e034782398))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.42.1...v) (2025-03-20)
 
 
