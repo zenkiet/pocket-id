@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/emersion/go-sasl"
 	"github.com/emersion/go-smtp"
+	"github.com/google/uuid"
 	"github.com/pocket-id/pocket-id/backend/internal/common"
 	"github.com/pocket-id/pocket-id/backend/internal/model"
 	"github.com/pocket-id/pocket-id/backend/internal/utils/email"
@@ -16,10 +17,9 @@ import (
 	"mime/quotedprintable"
 	"net/textproto"
 	"os"
+	"strings"
 	ttemplate "text/template"
 	"time"
-	"github.com/google/uuid"
-	"strings"
 )
 
 type EmailService struct {
@@ -107,7 +107,7 @@ func SendEmail[V any](srv *EmailService, toEmail email.Address, template email.T
 			domain = hostname
 		}
 	}
-	c.AddHeader("Message-ID", "<" + uuid.New().String() + "@" + domain + ">")
+	c.AddHeader("Message-ID", "<"+uuid.New().String()+"@"+domain+">")
 
 	c.Body(body)
 
@@ -131,7 +131,7 @@ func (srv *EmailService) getSmtpClient() (client *smtp.Client, err error) {
 	smtpAddress := srv.appConfigService.DbConfig.SmtpHost.Value + ":" + port
 
 	tlsConfig := &tls.Config{
-		InsecureSkipVerify: srv.appConfigService.DbConfig.SmtpSkipCertVerify.Value == "true",
+		InsecureSkipVerify: srv.appConfigService.DbConfig.SmtpSkipCertVerify.IsTrue(), //nolint:gosec
 		ServerName:         srv.appConfigService.DbConfig.SmtpHost.Value,
 	}
 
