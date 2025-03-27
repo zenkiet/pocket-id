@@ -5,13 +5,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"github.com/emersion/go-sasl"
-	"github.com/emersion/go-smtp"
-	"github.com/google/uuid"
-	"github.com/pocket-id/pocket-id/backend/internal/common"
-	"github.com/pocket-id/pocket-id/backend/internal/model"
-	"github.com/pocket-id/pocket-id/backend/internal/utils/email"
-	"gorm.io/gorm"
 	htemplate "html/template"
 	"mime/multipart"
 	"mime/quotedprintable"
@@ -20,6 +13,14 @@ import (
 	"strings"
 	ttemplate "text/template"
 	"time"
+
+	"github.com/emersion/go-sasl"
+	"github.com/emersion/go-smtp"
+	"github.com/google/uuid"
+	"github.com/pocket-id/pocket-id/backend/internal/common"
+	"github.com/pocket-id/pocket-id/backend/internal/model"
+	"github.com/pocket-id/pocket-id/backend/internal/utils/email"
+	"gorm.io/gorm"
 )
 
 type EmailService struct {
