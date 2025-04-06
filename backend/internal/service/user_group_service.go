@@ -64,6 +64,9 @@ func (s *UserGroupService) getInternal(ctx context.Context, id string, tx *gorm.
 
 func (s *UserGroupService) Delete(ctx context.Context, id string) error {
 	tx := s.db.Begin()
+	defer func() {
+		tx.Rollback()
+	}()
 
 	var group model.UserGroup
 	err := tx.
@@ -77,10 +80,6 @@ func (s *UserGroupService) Delete(ctx context.Context, id string) error {
 
 	// Disallow deleting the group if it is an LDAP group and LDAP is enabled
 	if group.LdapID != nil && s.appConfigService.DbConfig.LdapEnabled.IsTrue() {
-		err = tx.Rollback().Error
-		if err != nil {
-			return err
-		}
 		return &common.LdapUserGroupUpdateError{}
 	}
 
@@ -125,16 +124,17 @@ func (s *UserGroupService) createInternal(ctx context.Context, input dto.UserGro
 
 func (s *UserGroupService) Update(ctx context.Context, id string, input dto.UserGroupCreateDto, allowLdapUpdate bool) (group model.UserGroup, err error) {
 	tx := s.db.Begin()
+	defer func() {
+		tx.Rollback()
+	}()
 
 	group, err = s.updateInternal(ctx, id, input, allowLdapUpdate, tx)
 	if err != nil {
-		tx.Rollback()
 		return model.UserGroup{}, err
 	}
 
 	err = tx.Commit().Error
 	if err != nil {
-		tx.Rollback()
 		return model.UserGroup{}, err
 	}
 
@@ -171,16 +171,17 @@ func (s *UserGroupService) updateInternal(ctx context.Context, id string, input 
 
 func (s *UserGroupService) UpdateUsers(ctx context.Context, id string, userIds []string) (group model.UserGroup, err error) {
 	tx := s.db.Begin()
+	defer func() {
+		tx.Rollback()
+	}()
 
 	group, err = s.updateUsersInternal(ctx, id, userIds, tx)
 	if err != nil {
-		tx.Rollback()
 		return model.UserGroup{}, err
 	}
 
 	err = tx.Commit().Error
 	if err != nil {
-		tx.Rollback()
 		return model.UserGroup{}, err
 	}
 

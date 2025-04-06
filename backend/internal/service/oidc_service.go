@@ -44,7 +44,6 @@ func NewOidcService(db *gorm.DB, jwtService *JwtService, appConfigService *AppCo
 func (s *OidcService) Authorize(ctx context.Context, input dto.AuthorizeOidcClientRequestDto, userID, ipAddress, userAgent string) (string, string, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -194,7 +193,6 @@ func (s *OidcService) CreateTokens(ctx context.Context, code, grantType, clientI
 func (s *OidcService) createTokenFromAuthorizationCode(ctx context.Context, code, clientID, clientSecret, codeVerifier string) (idToken string, accessToken string, refreshToken string, exp int, err error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -284,7 +282,6 @@ func (s *OidcService) createTokenFromRefreshToken(ctx context.Context, refreshTo
 
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -421,7 +418,6 @@ func (s *OidcService) CreateClient(ctx context.Context, input dto.OidcClientCrea
 func (s *OidcService) UpdateClient(ctx context.Context, clientID string, input dto.OidcClientCreateDto) (model.OidcClient, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -474,7 +470,6 @@ func (s *OidcService) DeleteClient(ctx context.Context, clientID string) error {
 func (s *OidcService) CreateClientSecret(ctx context.Context, clientID string) (string, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -548,7 +543,6 @@ func (s *OidcService) UpdateClientLogo(ctx context.Context, clientID string, fil
 
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -588,7 +582,6 @@ func (s *OidcService) UpdateClientLogo(ctx context.Context, clientID string, fil
 func (s *OidcService) DeleteClientLogo(ctx context.Context, clientID string) error {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -630,7 +623,6 @@ func (s *OidcService) DeleteClientLogo(ctx context.Context, clientID string) err
 func (s *OidcService) GetUserClaimsForClient(ctx context.Context, userID string, clientID string) (map[string]interface{}, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -722,7 +714,6 @@ func (s *OidcService) getUserClaimsForClientInternal(ctx context.Context, userID
 func (s *OidcService) UpdateAllowedUserGroups(ctx context.Context, id string, input dto.OidcUpdateAllowedUserGroupsDto) (client model.OidcClient, err error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 

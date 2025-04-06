@@ -75,7 +75,6 @@ func (s *CustomClaimService) updateCustomClaims(ctx context.Context, idType idTy
 
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 

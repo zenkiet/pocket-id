@@ -49,7 +49,6 @@ func NewWebAuthnService(db *gorm.DB, jwtService *JwtService, auditLogService *Au
 func (s *WebAuthnService) BeginRegistration(ctx context.Context, userID string) (*model.PublicKeyCredentialCreationOptions, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -104,7 +103,6 @@ func (s *WebAuthnService) BeginRegistration(ctx context.Context, userID string) 
 func (s *WebAuthnService) VerifyRegistration(ctx context.Context, sessionID, userID string, r *http.Request) (model.WebauthnCredential, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -206,7 +204,6 @@ func (s *WebAuthnService) BeginLogin(ctx context.Context) (*model.PublicKeyCrede
 func (s *WebAuthnService) VerifyLogin(ctx context.Context, sessionID string, credentialAssertionData *protocol.ParsedCredentialAssertionData, ipAddress, userAgent string) (model.User, string, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -284,7 +281,6 @@ func (s *WebAuthnService) DeleteCredential(ctx context.Context, userID, credenti
 func (s *WebAuthnService) UpdateCredential(ctx context.Context, userID, credentialID, name string) (model.WebauthnCredential, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 

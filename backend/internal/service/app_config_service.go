@@ -207,7 +207,6 @@ func (s *AppConfigService) UpdateAppConfig(ctx context.Context, input dto.AppCon
 
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -345,7 +344,6 @@ func (s *AppConfigService) UpdateImage(ctx context.Context, uploadedFile *multip
 func (s *AppConfigService) InitDbConfig(ctx context.Context) (err error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 

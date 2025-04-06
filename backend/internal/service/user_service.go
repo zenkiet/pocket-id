@@ -205,7 +205,6 @@ func (s *UserService) deleteUserInternal(ctx context.Context, userID string, all
 func (s *UserService) CreateUser(ctx context.Context, input dto.UserCreateDto) (model.User, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -251,7 +250,6 @@ func (s *UserService) createUserInternal(ctx context.Context, input dto.UserCrea
 func (s *UserService) UpdateUser(ctx context.Context, userID string, updatedUser dto.UserCreateDto, updateOwnUser bool, allowLdapUpdate bool) (model.User, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -313,7 +311,6 @@ func (s *UserService) updateUserInternal(ctx context.Context, userID string, upd
 func (s *UserService) RequestOneTimeAccessEmail(ctx context.Context, emailAddress, redirectPath string) error {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -409,7 +406,6 @@ func (s *UserService) createOneTimeAccessTokenInternal(ctx context.Context, user
 func (s *UserService) ExchangeOneTimeAccessToken(ctx context.Context, token string, ipAddress, userAgent string) (model.User, string, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -453,7 +449,6 @@ func (s *UserService) ExchangeOneTimeAccessToken(ctx context.Context, token stri
 func (s *UserService) UpdateUserGroups(ctx context.Context, id string, userGroupIds []string) (user model.User, err error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
@@ -502,7 +497,6 @@ func (s *UserService) UpdateUserGroups(ctx context.Context, id string, userGroup
 func (s *UserService) SetupInitialAdmin(ctx context.Context) (model.User, string, error) {
 	tx := s.db.Begin()
 	defer func() {
-		// This is a no-op if the transaction has been committed already
 		tx.Rollback()
 	}()
 
