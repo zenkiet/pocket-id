@@ -26,11 +26,9 @@ import (
 )
 
 func TestJwtService_Init(t *testing.T) {
-	mockConfig := &AppConfigService{
-		DbConfig: &model.AppConfig{
-			SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
-		},
-	}
+	mockConfig := NewTestAppConfigService(&model.AppConfig{
+		SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
+	})
 
 	t.Run("should generate new key when none exists", func(t *testing.T) {
 		// Create a temporary directory for the test
@@ -142,11 +140,9 @@ func TestJwtService_Init(t *testing.T) {
 }
 
 func TestJwtService_GetPublicJWK(t *testing.T) {
-	mockConfig := &AppConfigService{
-		DbConfig: &model.AppConfig{
-			SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
-		},
-	}
+	mockConfig := NewTestAppConfigService(&model.AppConfig{
+		SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
+	})
 
 	t.Run("returns public key when private key is initialized", func(t *testing.T) {
 		// Create a temporary directory for the test
@@ -276,11 +272,9 @@ func TestGenerateVerifyAccessToken(t *testing.T) {
 	tempDir := t.TempDir()
 
 	// Initialize the JWT service with a mock AppConfigService
-	mockConfig := &AppConfigService{
-		DbConfig: &model.AppConfig{
-			SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
-		},
-	}
+	mockConfig := NewTestAppConfigService(&model.AppConfig{
+		SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
+	})
 
 	// Setup the environment variable required by the token verification
 	originalAppURL := common.EnvConfig.AppURL
@@ -366,11 +360,9 @@ func TestGenerateVerifyAccessToken(t *testing.T) {
 
 	t.Run("uses session duration from config", func(t *testing.T) {
 		// Create a JWT service with a different session duration
-		customMockConfig := &AppConfigService{
-			DbConfig: &model.AppConfig{
-				SessionDuration: model.AppConfigVariable{Value: "30"}, // 30 minutes
-			},
-		}
+		customMockConfig := NewTestAppConfigService(&model.AppConfig{
+			SessionDuration: model.AppConfigVariable{Value: "30"}, // 30 minutes
+		})
 
 		service := &JwtService{}
 		err := service.init(customMockConfig, tempDir)
@@ -567,11 +559,9 @@ func TestGenerateVerifyIdToken(t *testing.T) {
 	tempDir := t.TempDir()
 
 	// Initialize the JWT service with a mock AppConfigService
-	mockConfig := &AppConfigService{
-		DbConfig: &model.AppConfig{
-			SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
-		},
-	}
+	mockConfig := NewTestAppConfigService(&model.AppConfig{
+		SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
+	})
 
 	// Setup the environment variable required by the token verification
 	originalAppURL := common.EnvConfig.AppURL
@@ -900,11 +890,9 @@ func TestGenerateVerifyOauthAccessToken(t *testing.T) {
 	tempDir := t.TempDir()
 
 	// Initialize the JWT service with a mock AppConfigService
-	mockConfig := &AppConfigService{
-		DbConfig: &model.AppConfig{
-			SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
-		},
-	}
+	mockConfig := NewTestAppConfigService(&model.AppConfig{
+		SessionDuration: model.AppConfigVariable{Value: "60"}, // 60 minutes
+	})
 
 	// Setup the environment variable required by the token verification
 	originalAppURL := common.EnvConfig.AppURL

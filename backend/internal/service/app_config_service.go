@@ -3,30 +3,35 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"mime/multipart"
 	"os"
 	"reflect"
+	"strings"
+	"sync/atomic"
+	"time"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/pocket-id/pocket-id/backend/internal/common"
 	"github.com/pocket-id/pocket-id/backend/internal/dto"
 	"github.com/pocket-id/pocket-id/backend/internal/model"
 	"github.com/pocket-id/pocket-id/backend/internal/utils"
-	"gorm.io/gorm"
 )
 
 type AppConfigService struct {
-	DbConfig *model.AppConfig
+	dbConfig atomic.Pointer[model.AppConfig]
 	db       *gorm.DB
 }
 
 func NewAppConfigService(ctx context.Context, db *gorm.DB) *AppConfigService {
 	service := &AppConfigService{
-		DbConfig: &defaultDbConfig,
-		db:       db,
+		db: db,
 	}
 
-	err := service.InitDbConfig(ctx)
+	err := service.LoadDbConfig(ctx)
 	if err != nil {
 		log.Fatalf("Failed to initialize app config service: %v", err)
 	}
@@ -34,170 +39,109 @@ func NewAppConfigService(ctx context.Context, db *gorm.DB) *AppConfigService {
 	return service
 }
 
-var defaultDbConfig = model.AppConfig{
-	// General
-	AppName: model.AppConfigVariable{
-		Key:          "appName",
-		Type:         "string",
-		IsPublic:     true,
-		DefaultValue: "Pocket ID",
-	},
-	SessionDuration: model.AppConfigVariable{
-		Key:          "sessionDuration",
-		Type:         "number",
-		DefaultValue: "60",
-	},
-	EmailsVerified: model.AppConfigVariable{
-		Key:          "emailsVerified",
-		Type:         "bool",
-		DefaultValue: "false",
-	},
-	AllowOwnAccountEdit: model.AppConfigVariable{
-		Key:          "allowOwnAccountEdit",
-		Type:         "bool",
-		IsPublic:     true,
-		DefaultValue: "true",
-	},
-	// Internal
-	BackgroundImageType: model.AppConfigVariable{
-		Key:          "backgroundImageType",
-		Type:         "string",
-		IsInternal:   true,
-		DefaultValue: "jpg",
-	},
-	LogoLightImageType: model.AppConfigVariable{
-		Key:          "logoLightImageType",
-		Type:         "string",
-		IsInternal:   true,
-		DefaultValue: "svg",
-	},
-	LogoDarkImageType: model.AppConfigVariable{
-		Key:          "logoDarkImageType",
-		Type:         "string",
-		IsInternal:   true,
-		DefaultValue: "svg",
-	},
-	// Email
-	SmtpHost: model.AppConfigVariable{
-		Key:  "smtpHost",
-		Type: "string",
-	},
-	SmtpPort: model.AppConfigVariable{
-		Key:  "smtpPort",
-		Type: "number",
-	},
-	SmtpFrom: model.AppConfigVariable{
-		Key:  "smtpFrom",
-		Type: "string",
-	},
-	SmtpUser: model.AppConfigVariable{
-		Key:  "smtpUser",
-		Type: "string",
-	},
-	SmtpPassword: model.AppConfigVariable{
-		Key:  "smtpPassword",
-		Type: "string",
-	},
-	SmtpTls: model.AppConfigVariable{
-		Key:          "smtpTls",
-		Type:         "string",
-		DefaultValue: "none",
-	},
-	SmtpSkipCertVerify: model.AppConfigVariable{
-		Key:          "smtpSkipCertVerify",
-		Type:         "bool",
-		DefaultValue: "false",
-	},
-	EmailLoginNotificationEnabled: model.AppConfigVariable{
-		Key:          "emailLoginNotificationEnabled",
-		Type:         "bool",
-		DefaultValue: "false",
-	},
-	EmailOneTimeAccessEnabled: model.AppConfigVariable{
-		Key:          "emailOneTimeAccessEnabled",
-		Type:         "bool",
-		IsPublic:     true,
-		DefaultValue: "false",
-	},
-	// LDAP
-	LdapEnabled: model.AppConfigVariable{
-		Key:          "ldapEnabled",
-		Type:         "bool",
-		IsPublic:     true,
-		DefaultValue: "false",
-	},
-	LdapUrl: model.AppConfigVariable{
-		Key:  "ldapUrl",
-		Type: "string",
-	},
-	LdapBindDn: model.AppConfigVariable{
-		Key:  "ldapBindDn",
-		Type: "string",
-	},
-	LdapBindPassword: model.AppConfigVariable{
-		Key:  "ldapBindPassword",
-		Type: "string",
-	},
-	LdapBase: model.AppConfigVariable{
-		Key:  "ldapBase",
-		Type: "string",
-	},
-	LdapUserSearchFilter: model.AppConfigVariable{
-		Key:          "ldapUserSearchFilter",
-		Type:         "string",
-		DefaultValue: "(objectClass=person)",
-	},
-	LdapUserGroupSearchFilter: model.AppConfigVariable{
-		Key:          "ldapUserGroupSearchFilter",
-		Type:         "string",
-		DefaultValue: "(objectClass=groupOfNames)",
-	},
-	LdapSkipCertVerify: model.AppConfigVariable{
-		Key:          "ldapSkipCertVerify",
-		Type:         "bool",
-		DefaultValue: "false",
-	},
-	LdapAttributeUserUniqueIdentifier: model.AppConfigVariable{
-		Key:  "ldapAttributeUserUniqueIdentifier",
-		Type: "string",
-	},
-	LdapAttributeUserUsername: model.AppConfigVariable{
-		Key:  "ldapAttributeUserUsername",
-		Type: "string",
-	},
-	LdapAttributeUserEmail: model.AppConfigVariable{
-		Key:  "ldapAttributeUserEmail",
-		Type: "string",
-	},
-	LdapAttributeUserFirstName: model.AppConfigVariable{
-		Key:  "ldapAttributeUserFirstName",
-		Type: "string",
-	},
-	LdapAttributeUserLastName: model.AppConfigVariable{
-		Key:  "ldapAttributeUserLastName",
-		Type: "string",
-	},
-	LdapAttributeUserProfilePicture: model.AppConfigVariable{
-		Key:  "ldapAttributeUserProfilePicture",
-		Type: "string",
-	},
-	LdapAttributeGroupMember: model.AppConfigVariable{
-		Key:          "ldapAttributeGroupMember",
-		Type:         "string",
-		DefaultValue: "member",
-	},
-	LdapAttributeGroupUniqueIdentifier: model.AppConfigVariable{
-		Key:  "ldapAttributeGroupUniqueIdentifier",
-		Type: "string",
-	},
-	LdapAttributeGroupName: model.AppConfigVariable{
-		Key:  "ldapAttributeGroupName",
-		Type: "string",
-	},
-	LdapAttributeAdminGroup: model.AppConfigVariable{
-		Key:  "ldapAttributeAdminGroup",
-		Type: "string",
-	},
+// GetDbConfig returns the application configuration.
+// Important: Treat the object as read-only: do not modify its properties directly!
+func (s *AppConfigService) GetDbConfig() *model.AppConfig {
+	v := s.dbConfig.Load()
+	if v == nil {
+		// This indicates a development-time error
+		panic("called GetDbConfig before DbConfig is loaded")
+	}
+
+	return v
+}
+
+func (s *AppConfigService) getDefaultDbConfig() *model.AppConfig {
+	// Values are the default ones
+	return &model.AppConfig{
+		// General
+		AppName:             model.AppConfigVariable{Value: "Pocket ID"},
+		SessionDuration:     model.AppConfigVariable{Value: "60"},
+		EmailsVerified:      model.AppConfigVariable{Value: "false"},
+		AllowOwnAccountEdit: model.AppConfigVariable{Value: "true"},
+		// Internal
+		BackgroundImageType: model.AppConfigVariable{Value: "jpg"},
+		LogoLightImageType:  model.AppConfigVariable{Value: "svg"},
+		LogoDarkImageType:   model.AppConfigVariable{Value: "svg"},
+		// Email
+		SmtpHost:                      model.AppConfigVariable{},
+		SmtpPort:                      model.AppConfigVariable{},
+		SmtpFrom:                      model.AppConfigVariable{},
+		SmtpUser:                      model.AppConfigVariable{},
+		SmtpPassword:                  model.AppConfigVariable{},
+		SmtpTls:                       model.AppConfigVariable{Value: "none"},
+		SmtpSkipCertVerify:            model.AppConfigVariable{Value: "false"},
+		EmailLoginNotificationEnabled: model.AppConfigVariable{Value: "false"},
+		EmailOneTimeAccessEnabled:     model.AppConfigVariable{Value: "false"},
+		// LDAP
+		LdapEnabled:                        model.AppConfigVariable{Value: "false"},
+		LdapUrl:                            model.AppConfigVariable{},
+		LdapBindDn:                         model.AppConfigVariable{},
+		LdapBindPassword:                   model.AppConfigVariable{},
+		LdapBase:                           model.AppConfigVariable{},
+		LdapUserSearchFilter:               model.AppConfigVariable{Value: "(objectClass=person)"},
+		LdapUserGroupSearchFilter:          model.AppConfigVariable{Value: "(objectClass=groupOfNames)"},
+		LdapSkipCertVerify:                 model.AppConfigVariable{Value: "false"},
+		LdapAttributeUserUniqueIdentifier:  model.AppConfigVariable{},
+		LdapAttributeUserUsername:          model.AppConfigVariable{},
+		LdapAttributeUserEmail:             model.AppConfigVariable{},
+		LdapAttributeUserFirstName:         model.AppConfigVariable{},
+		LdapAttributeUserLastName:          model.AppConfigVariable{},
+		LdapAttributeUserProfilePicture:    model.AppConfigVariable{},
+		LdapAttributeGroupMember:           model.AppConfigVariable{Value: "member"},
+		LdapAttributeGroupUniqueIdentifier: model.AppConfigVariable{},
+		LdapAttributeGroupName:             model.AppConfigVariable{},
+		LdapAttributeAdminGroup:            model.AppConfigVariable{},
+	}
+}
+
+func (s *AppConfigService) updateAppConfigStartTransaction(ctx context.Context) (tx *gorm.DB, err error) {
+	// We start a transaction before doing any work, to ensure that we are the only ones updating the data in the database
+	// This works across multiple processes too
+	tx = s.db.Begin()
+	err = tx.Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin database transaction: %w", err)
+	}
+
+	// With SQLite there's nothing else we need to do, because a transaction blocks the entire database
+	// However, with Postgres we need to manually lock the table to prevent others from doing the same
+	switch s.db.Name() {
+	case "postgres":
+		// We do not use "NOWAIT" so this blocks until the database is available, or the context is canceled
+		// Here we use a context with a 10s timeout in case the database is blocked for longer
+		lockCtx, lockCancel := context.WithTimeout(ctx, 10*time.Second)
+		defer lockCancel()
+		err = tx.
+			WithContext(lockCtx).
+			Exec("LOCK TABLE app_config_variables IN ACCESS EXCLUSIVE MODE").
+			Error
+		if err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("failed to acquire lock on app_config_variables table: %w", err)
+		}
+	default:
+		// Nothing to do here
+	}
+
+	return tx, nil
+}
+
+func (s *AppConfigService) updateAppConfigUpdateDatabase(ctx context.Context, tx *gorm.DB, dbUpdate *[]model.AppConfigVariable) error {
+	err := tx.
+		WithContext(ctx).
+		Clauses(clause.OnConflict{
+			// Perform an "upsert" if the key already exists, replacing the value
+			Columns:   []clause.Column{{Name: "key"}},
+			DoUpdates: clause.AssignmentColumns([]string{"value"}),
+		}).
+		Create(&dbUpdate).
+		Error
+	if err != nil {
+		return fmt.Errorf("failed to update config in database: %w", err)
+	}
+
+	return nil
 }
 
 func (s *AppConfigService) UpdateAppConfig(ctx context.Context, input dto.AppConfigUpdateDto) ([]model.AppConfigVariable, error) {
@@ -205,106 +149,168 @@ func (s *AppConfigService) UpdateAppConfig(ctx context.Context, input dto.AppCon
 		return nil, &common.UiConfigDisabledError{}
 	}
 
-	tx := s.db.Begin()
+	// If EmailLoginNotificationEnabled is set to false (explicitly), disable the EmailOneTimeAccessEnabled
+	if input.EmailLoginNotificationEnabled == "false" {
+		input.EmailOneTimeAccessEnabled = "false"
+	}
+
+	// Start the transaction
+	tx, err := s.updateAppConfigStartTransaction(ctx)
+	if err != nil {
+		return nil, err
+	}
 	defer func() {
 		tx.Rollback()
 	}()
 
-	var err error
+	// From here onwards, we know we are the only process/goroutine with exclusive access to the config
+	// Re-load the config from the database to be sure we have the correct data
+	cfg, err := s.loadDbConfigInternal(ctx, tx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to reload config from database: %w", err)
+	}
 
+	defaultCfg := s.getDefaultDbConfig()
+
+	// Iterate through all the fields to update
+	// We update the in-memory data (in the cfg struct) and collect values to update in the database
 	rt := reflect.ValueOf(input).Type()
 	rv := reflect.ValueOf(input)
-
-	savedConfigVariables := make([]model.AppConfigVariable, 0, rt.NumField())
+	dbUpdate := make([]model.AppConfigVariable, 0, rt.NumField())
 	for i := range rt.NumField() {
 		field := rt.Field(i)
-		key := field.Tag.Get("json")
 		value := rv.FieldByName(field.Name).String()
 
-		// If the emailEnabled is set to false, disable the emailOneTimeAccessEnabled
-		if key == s.DbConfig.EmailOneTimeAccessEnabled.Key {
-			if rv.FieldByName("EmailEnabled").String() == "false" {
-				value = "false"
-			}
+		// Get the value of the json tag, taking only what's before the comma
+		key, _, _ := strings.Cut(field.Tag.Get("json"), ",")
+
+		// Update the in-memory config value
+		// If the new value is an empty string, then we set the in-memory value to the default one
+		// Skip values that are internal only and can't be updated
+		if value == "" {
+			// Ignore errors here as we know the key exists
+			defaultValue, _ := defaultCfg.FieldByKey(key)
+			err = cfg.UpdateField(key, defaultValue, true)
+		} else {
+			err = cfg.UpdateField(key, value, true)
 		}
 
-		var appConfigVariable model.AppConfigVariable
-		err = tx.
-			WithContext(ctx).
-			First(&appConfigVariable, "key = ? AND is_internal = false", key).
-			Error
-		if err != nil {
-			return nil, err
+		// If we tried to update an internal field, ignore the error (and do not update in the DB)
+		if errors.Is(err, model.AppConfigInternalForbiddenError{}) {
+			continue
+		} else if err != nil {
+			return nil, fmt.Errorf("failed to update in-memory config for key '%s': %w", key, err)
 		}
 
-		appConfigVariable.Value = value
-		err = tx.
-			WithContext(ctx).
-			Save(&appConfigVariable).
-			Error
-		if err != nil {
-			return nil, err
-		}
-
-		savedConfigVariables = append(savedConfigVariables, appConfigVariable)
+		// We always save "value" which can be an empty string
+		dbUpdate = append(dbUpdate, model.AppConfigVariable{
+			Key:   key,
+			Value: value,
+		})
 	}
 
+	// Update the values in the database
+	err = s.updateAppConfigUpdateDatabase(ctx, tx, &dbUpdate)
+	if err != nil {
+		return nil, err
+	}
+
+	// Commit the changes to the DB, then finally save the updated config in the object
 	err = tx.Commit().Error
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	err = s.LoadDbConfigFromDb()
-	if err != nil {
-		return nil, err
-	}
+	s.dbConfig.Store(cfg)
 
-	return savedConfigVariables, nil
+	// Return the updated config
+	res := cfg.ToAppConfigVariableSlice(true)
+	return res, nil
 }
 
-func (s *AppConfigService) updateImageType(ctx context.Context, imageName string, fileType string) error {
-	key := imageName + "ImageType"
-	err := s.db.
-		WithContext(ctx).
-		Model(&model.AppConfigVariable{}).
-		Where("key = ?", key).
-		Update("value", fileType).
-		Error
+// UpdateAppConfigValues
+func (s *AppConfigService) UpdateAppConfigValues(ctx context.Context, keysAndValues ...string) error {
+	if common.EnvConfig.UiConfigDisabled {
+		return &common.UiConfigDisabledError{}
+	}
+
+	// Count of keysAndValues must be even
+	if len(keysAndValues)%2 != 0 {
+		return errors.New("invalid number of arguments received")
+	}
+
+	// Start the transaction
+	tx, err := s.updateAppConfigStartTransaction(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		tx.Rollback()
+	}()
+
+	// From here onwards, we know we are the only process/goroutine with exclusive access to the config
+	// Re-load the config from the database to be sure we have the correct data
+	cfg, err := s.loadDbConfigInternal(ctx, tx)
+	if err != nil {
+		return fmt.Errorf("failed to reload config from database: %w", err)
+	}
+
+	defaultCfg := s.getDefaultDbConfig()
+
+	// Iterate through all the fields to update
+	// We update the in-memory data (in the cfg struct) and collect values to update in the database
+	// (Note the += 2, as we are iterating through key-value pairs)
+	dbUpdate := make([]model.AppConfigVariable, 0, len(keysAndValues)/2)
+	for i := 0; i < len(keysAndValues); i += 2 {
+		key := keysAndValues[i]
+		value := keysAndValues[i+1]
+
+		// Ensure that the field is valid
+		// We do this by grabbing the default value
+		var defaultValue string
+		defaultValue, err = defaultCfg.FieldByKey(key)
+		if err != nil {
+			return fmt.Errorf("invalid configuration key '%s': %w", key, err)
+		}
+
+		// Update the in-memory config value
+		// If the new value is an empty string, then we set the in-memory value to the default one
+		// Skip values that are internal only and can't be updated
+		if value == "" {
+			err = cfg.UpdateField(key, defaultValue, false)
+		} else {
+			err = cfg.UpdateField(key, value, false)
+		}
+		if err != nil {
+			return fmt.Errorf("failed to update in-memory config for key '%s': %w", key, err)
+		}
+
+		// We always save "value" which can be an empty string
+		dbUpdate = append(dbUpdate, model.AppConfigVariable{
+			Key:   key,
+			Value: value,
+		})
+	}
+
+	// Update the values in the database
+	err = s.updateAppConfigUpdateDatabase(ctx, tx, &dbUpdate)
 	if err != nil {
 		return err
 	}
 
-	return s.LoadDbConfigFromDb()
+	// Commit the changes to the DB, then finally save the updated config in the object
+	err = tx.Commit().Error
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	s.dbConfig.Store(cfg)
+
+	return nil
 }
 
-func (s *AppConfigService) ListAppConfig(ctx context.Context, showAll bool) (configuration []model.AppConfigVariable, err error) {
-	if showAll {
-		err = s.db.
-			WithContext(ctx).
-			Find(&configuration).
-			Error
-	} else {
-		err = s.db.
-			WithContext(ctx).
-			Find(&configuration, "is_public = true").
-			Error
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	for i := range configuration {
-		if common.EnvConfig.UiConfigDisabled {
-			// Set the value to the environment variable if the UI config is disabled
-			configuration[i].Value = s.getConfigVariableFromEnvironmentVariable(configuration[i].Key, configuration[i].DefaultValue)
-		} else if configuration[i].Value == "" && configuration[i].DefaultValue != "" {
-			// Set the value to the default value if it is empty
-			configuration[i].Value = configuration[i].DefaultValue
-		}
-	}
-
-	return configuration, nil
+func (s *AppConfigService) ListAppConfig(showAll bool) []model.AppConfigVariable {
+	return s.GetDbConfig().ToAppConfigVariableSlice(showAll)
 }
 
 func (s *AppConfigService) UpdateImage(ctx context.Context, uploadedFile *multipart.FileHeader, imageName string, oldImageType string) (err error) {
@@ -314,161 +320,108 @@ func (s *AppConfigService) UpdateImage(ctx context.Context, uploadedFile *multip
 		return &common.FileTypeNotSupportedError{}
 	}
 
-	// Delete the old image if it has a different file type
-	if fileType != oldImageType {
-		oldImagePath := common.EnvConfig.UploadPath + "/application-images/" + imageName + "." + oldImageType
-		err = os.Remove(oldImagePath)
-		if err != nil {
-			return err
-		}
-	}
-
+	// Save the updated image
 	imagePath := common.EnvConfig.UploadPath + "/application-images/" + imageName + "." + fileType
 	err = utils.SaveFile(uploadedFile, imagePath)
 	if err != nil {
 		return err
 	}
 
-	// Update the file type in the database
-	err = s.updateImageType(ctx, imageName, fileType)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// InitDbConfig creates the default configuration values in the database if they do not exist,
-// updates existing configurations if they differ from the default, and deletes any configurations
-// that are not in the default configuration.
-func (s *AppConfigService) InitDbConfig(ctx context.Context) (err error) {
-	tx := s.db.Begin()
-	defer func() {
-		tx.Rollback()
-	}()
-
-	// Reflect to get the underlying value of DbConfig and its default configuration
-	defaultConfigReflectValue := reflect.ValueOf(defaultDbConfig)
-	defaultKeys := make(map[string]struct{})
-
-	// Iterate over the fields of DbConfig
-	for i := range defaultConfigReflectValue.NumField() {
-		defaultConfigVar := defaultConfigReflectValue.Field(i).Interface().(model.AppConfigVariable)
-
-		defaultKeys[defaultConfigVar.Key] = struct{}{}
-
-		var storedConfigVar model.AppConfigVariable
-		err = tx.
-			WithContext(ctx).
-			First(&storedConfigVar, "key = ?", defaultConfigVar.Key).
-			Error
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			// If the configuration does not exist, create it
-			err = tx.
-				WithContext(ctx).
-				Create(&defaultConfigVar).
-				Error
-			if err != nil {
-				return err
-			}
-			continue
-		} else if err != nil {
-			return err
-		}
-
-		// Update existing configuration if it differs from the default
-		if storedConfigVar.Type != defaultConfigVar.Type ||
-			storedConfigVar.IsPublic != defaultConfigVar.IsPublic ||
-			storedConfigVar.IsInternal != defaultConfigVar.IsInternal ||
-			storedConfigVar.DefaultValue != defaultConfigVar.DefaultValue {
-			// Set values
-			storedConfigVar.Type = defaultConfigVar.Type
-			storedConfigVar.IsPublic = defaultConfigVar.IsPublic
-			storedConfigVar.IsInternal = defaultConfigVar.IsInternal
-			storedConfigVar.DefaultValue = defaultConfigVar.DefaultValue
-
-			err = tx.
-				WithContext(ctx).
-				Save(&storedConfigVar).
-				Error
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	// Delete any configurations not in the default keys
-	var allConfigVars []model.AppConfigVariable
-	err = tx.
-		WithContext(ctx).
-		Find(&allConfigVars).
-		Error
-	if err != nil {
-		return err
-	}
-
-	for _, config := range allConfigVars {
-		if _, exists := defaultKeys[config.Key]; exists {
-			continue
-		}
-
-		err = tx.
-			WithContext(ctx).
-			Delete(&config).
-			Error
+	// Delete the old image if it has a different file type, then update the type in the database
+	if fileType != oldImageType {
+		oldImagePath := common.EnvConfig.UploadPath + "/application-images/" + imageName + "." + oldImageType
+		err = os.Remove(oldImagePath)
 		if err != nil {
 			return err
 		}
-	}
 
-	// Commit the changes
-	err = tx.Commit().Error
-	if err != nil {
-		return err
-	}
+		// Update the file type in the database
+		err = s.UpdateAppConfigValues(ctx, imageName+"ImageType", fileType)
+		if err != nil {
+			return err
+		}
 
-	// Reload the configuration
-	err = s.LoadDbConfigFromDb()
-	if err != nil {
-		return err
 	}
 
 	return nil
 }
 
-// LoadDbConfigFromDb loads the configuration values from the database into the DbConfig struct.
-func (s *AppConfigService) LoadDbConfigFromDb() error {
-	return s.db.Transaction(func(tx *gorm.DB) error {
-		dbConfigReflectValue := reflect.ValueOf(s.DbConfig).Elem()
+// LoadDbConfig loads the configuration values from the database into the DbConfig struct.
+func (s *AppConfigService) LoadDbConfig(ctx context.Context) (err error) {
+	var dest *model.AppConfig
 
-		for i := range dbConfigReflectValue.NumField() {
-			dbConfigField := dbConfigReflectValue.Field(i)
-			currentConfigVar := dbConfigField.Interface().(model.AppConfigVariable)
-			var storedConfigVar model.AppConfigVariable
-			err := tx.First(&storedConfigVar, "key = ?", currentConfigVar.Key).Error
-			if err != nil {
-				return err
-			}
-
-			if common.EnvConfig.UiConfigDisabled {
-				storedConfigVar.Value = s.getConfigVariableFromEnvironmentVariable(currentConfigVar.Key, storedConfigVar.DefaultValue)
-			} else if storedConfigVar.Value == "" && storedConfigVar.DefaultValue != "" {
-				storedConfigVar.Value = storedConfigVar.DefaultValue
-			}
-
-			dbConfigField.Set(reflect.ValueOf(storedConfigVar))
-		}
-
-		return nil
-	})
-}
-
-func (s *AppConfigService) getConfigVariableFromEnvironmentVariable(key, fallbackValue string) string {
-	environmentVariableName := utils.CamelCaseToScreamingSnakeCase(key)
-
-	if value, exists := os.LookupEnv(environmentVariableName); exists {
-		return value
+	// If the UI config is disabled, only load from the env
+	if common.EnvConfig.UiConfigDisabled {
+		dest, err = s.loadDbConfigFromEnv()
+	} else {
+		dest, err = s.loadDbConfigInternal(ctx, s.db)
+	}
+	if err != nil {
+		return err
 	}
 
-	return fallbackValue
+	// Update the value in the object
+	s.dbConfig.Store(dest)
+
+	return nil
+}
+
+func (s *AppConfigService) loadDbConfigFromEnv() (*model.AppConfig, error) {
+	// First, start from the default configuration
+	dest := s.getDefaultDbConfig()
+
+	// Iterate through each field
+	rt := reflect.ValueOf(dest).Elem().Type()
+	rv := reflect.ValueOf(dest).Elem()
+	for i := range rt.NumField() {
+		field := rt.Field(i)
+
+		// Get the value of the key tag, taking only what's before the comma
+		// The env var name is the key converted to SCREAMING_SNAKE_CASE
+		key, _, _ := strings.Cut(field.Tag.Get("key"), ",")
+		envVarName := utils.CamelCaseToScreamingSnakeCase(key)
+
+		// Set the value if it's set
+		value, ok := os.LookupEnv(envVarName)
+		if ok {
+			rv.Field(i).FieldByName("Value").SetString(value)
+		}
+	}
+
+	return dest, nil
+}
+
+func (s *AppConfigService) loadDbConfigInternal(ctx context.Context, tx *gorm.DB) (*model.AppConfig, error) {
+	// First, start from the default configuration
+	dest := s.getDefaultDbConfig()
+
+	// Load all configuration values from the database
+	// This loads all values in a single shot
+	loaded := []model.AppConfigVariable{}
+	queryCtx, queryCancel := context.WithTimeout(ctx, 10*time.Second)
+	defer queryCancel()
+	err := tx.
+		WithContext(queryCtx).
+		Find(&loaded).Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to load configuration from the database: %w", err)
+	}
+
+	// Iterate through all values loaded from the database
+	for _, v := range loaded {
+		// If the value is empty, it means we are using the default value
+		if v.Value == "" {
+			continue
+		}
+
+		// Find the field in the struct whose "key" tag matches, then update that
+		err = dest.UpdateField(v.Key, v.Value, false)
+
+		// We ignore the case of fields that don't exist, as there may be leftover data in the database
+		if err != nil && !errors.Is(err, model.AppConfigKeyNotFoundError{}) {
+			return nil, fmt.Errorf("failed to process config for key '%s': %w", v.Key, err)
+		}
+	}
+
+	return dest, nil
 }

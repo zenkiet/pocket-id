@@ -227,7 +227,7 @@ func (uc *UserController) updateUserHandler(c *gin.Context) {
 // @Success 200 {object} dto.UserDto
 // @Router /api/users/me [put]
 func (uc *UserController) updateCurrentUserHandler(c *gin.Context) {
-	if !uc.appConfigService.DbConfig.AllowOwnAccountEdit.IsTrue() {
+	if !uc.appConfigService.GetDbConfig().AllowOwnAccountEdit.IsTrue() {
 		_ = c.Error(&common.AccountEditNotAllowedError{})
 		return
 	}
@@ -396,7 +396,7 @@ func (uc *UserController) exchangeOneTimeAccessTokenHandler(c *gin.Context) {
 		return
 	}
 
-	maxAge := int(uc.appConfigService.DbConfig.SessionDuration.AsDurationMinutes().Seconds())
+	maxAge := int(uc.appConfigService.GetDbConfig().SessionDuration.AsDurationMinutes().Seconds())
 	cookie.AddAccessTokenCookie(c, maxAge, token)
 
 	c.JSON(http.StatusOK, userDto)
@@ -421,7 +421,7 @@ func (uc *UserController) getSetupAccessTokenHandler(c *gin.Context) {
 		return
 	}
 
-	maxAge := int(uc.appConfigService.DbConfig.SessionDuration.AsDurationMinutes().Seconds())
+	maxAge := int(uc.appConfigService.GetDbConfig().SessionDuration.AsDurationMinutes().Seconds())
 	cookie.AddAccessTokenCookie(c, maxAge, token)
 
 	c.JSON(http.StatusOK, userDto)
