@@ -34,6 +34,7 @@ test('Update email configuration', async ({ page }) => {
 	await page.getByLabel('Email Login Notification').click();
 	await page.getByLabel('Email Login Code Requested by User').click();
 	await page.getByLabel('Email Login Code from Admin').click();
+	await page.getByLabel('API Key Expiration').click();
 
 	await page.getByRole('button', { name: 'Save' }).nth(1).click();
 
@@ -49,6 +50,7 @@ test('Update email configuration', async ({ page }) => {
 	await expect(page.getByLabel('Email Login Notification')).toBeChecked();
 	await expect(page.getByLabel('Email Login Code Requested by User')).toBeChecked();
 	await expect(page.getByLabel('Email Login Code from Admin')).toBeChecked();
+	await expect(page.getByLabel('API Key Expiration')).toBeChecked();
 });
 
 test('Update LDAP configuration', async ({ page }) => {

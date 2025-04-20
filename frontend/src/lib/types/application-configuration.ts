@@ -20,6 +20,7 @@ export type AllAppConfig = AppConfig & {
 	smtpTls: 'none' | 'starttls' | 'tls';
 	smtpSkipCertVerify: boolean;
 	emailLoginNotificationEnabled: boolean;
+	emailApiKeyExpirationEnabled: boolean;
 	// LDAP
 	ldapUrl: string;
 	ldapBindDn: string;
