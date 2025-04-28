@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pocket-id/pocket-id/backend/internal/common"
 	"github.com/pocket-id/pocket-id/backend/internal/service"
 )
 
@@ -66,6 +68,13 @@ func (m *AuthMiddleware) Add() gin.HandlerFunc {
 				return
 			}
 			c.Next()
+			return
+		}
+
+		// If JWT auth failed and the error is not a NotSignedInError, abort the request
+		if !errors.Is(err, &common.NotSignedInError{}) {
+			c.Abort()
+			_ = c.Error(err)
 			return
 		}
 
