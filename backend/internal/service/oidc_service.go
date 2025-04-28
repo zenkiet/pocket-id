@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gorm.io/gorm/clause"
 	"log"
 	"mime/multipart"
 	"os"
@@ -15,6 +14,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"gorm.io/gorm/clause"
 
 	"github.com/lestrrat-go/jwx/v3/jwt"
 
@@ -1080,7 +1081,7 @@ func (s *OidcService) VerifyDeviceCode(ctx context.Context, userCode string, use
 	}
 
 	if !hasAuthorizedClient {
-		err := s.createAuthorizedClientInternal(ctx, deviceAuth.ClientID, userID, deviceAuth.Scope, tx)
+		err := s.createAuthorizedClientInternal(ctx, userID, deviceAuth.ClientID, deviceAuth.Scope, tx)
 		if err != nil {
 			return err
 		}
