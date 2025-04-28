@@ -1,3 +1,18 @@
+## [](https://github.com/pocket-id/pocket-id/compare/v0.50.0...v) (2025-04-28)
+
+
+### Features
+
+* new login code card position for mobile devices ([#452](https://github.com/pocket-id/pocket-id/issues/452)) ([02cacba](https://github.com/pocket-id/pocket-id/commit/02cacba5c5524481684cb0e1790811df113a9481))
+
+
+### Bug Fixes
+
+* do not require PKCE for public clients ([ce24372](https://github.com/pocket-id/pocket-id/commit/ce24372c571cc3b277095dc6a4107663d64f45b3))
+* hide global audit log switch for non admin users ([1efd1d1](https://github.com/pocket-id/pocket-id/commit/1efd1d182dbb6190d3c7e27034426c9e48781b4a))
+* return correct error message if user isn't authorized ([86d2b5f](https://github.com/pocket-id/pocket-id/commit/86d2b5f59f26cb944017826cbd8df915cdc986f1))
+* updating scopes of an authorized client fails with Postgres ([0a24ab8](https://github.com/pocket-id/pocket-id/commit/0a24ab80010eb5a15d99915802c6698274a5c57c))
+
 ## [](https://github.com/pocket-id/pocket-id/compare/v0.49.0...v) (2025-04-27)
 
 
