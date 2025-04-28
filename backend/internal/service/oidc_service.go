@@ -506,7 +506,7 @@ func (s *OidcService) CreateClient(ctx context.Context, input dto.OidcClientCrea
 		LogoutCallbackURLs: input.LogoutCallbackURLs,
 		CreatedByID:        userID,
 		IsPublic:           input.IsPublic,
-		PkceEnabled:        input.IsPublic || input.PkceEnabled,
+		PkceEnabled:        input.PkceEnabled,
 	}
 
 	err := s.db.

@@ -276,7 +276,7 @@
 	"callback_urls": "Callback URLs",
 	"logout_callback_urls": "Abmelde Callback URLs",
 	"public_client": "Öffentlicher Client",
-	"public_clients_do_not_have_a_client_secret_and_use_pkce_instead": "Öffentliche Clients haben kein Client-Geheimnis und verwenden stattdessen PKCE. Aktiviere dies, wenn dein Client eine SPA oder mobile App ist.",
+	"public_clients_description": "Öffentliche Clients haben kein Client-Geheimnis und verwenden stattdessen PKCE. Aktiviere dies, wenn dein Client eine SPA oder mobile App ist.",
 	"pkce": "PKCE",
 	"public_key_code_exchange_is_a_security_feature_to_prevent_csrf_and_authorization_code_interception_attacks": "Der Public Key Code Exchange (öffentlicher Schlüsselaustausch) ist eine Sicherheitsfunktion, um CSRF Angriffe und Angriffe zum Abfangen von Autorisierungscodes zu verhindern.",
 	"name_logo": "{name} Logo",

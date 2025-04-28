@@ -276,7 +276,7 @@
 	"callback_urls": "URL zpětného volání",
 	"logout_callback_urls": "URL zpětného volání při odhlášení",
 	"public_client": "Veřejný klient",
-	"public_clients_do_not_have_a_client_secret_and_use_pkce_instead": "Veřejní klienti nemají client secret a místo toho používají PKCE. Povolte to, pokud je váš klient SPA nebo mobilní aplikace.",
+	"public_clients_description": "Veřejní klienti nemají client secret a místo toho používají PKCE. Povolte to, pokud je váš klient SPA nebo mobilní aplikace.",
 	"pkce": "PKCE",
 	"public_key_code_exchange_is_a_security_feature_to_prevent_csrf_and_authorization_code_interception_attacks": "Public Key Exchange je bezpečnostní funkce, která zabraňuje útokům CSRF a narušení autorizačních kódů.",
 	"name_logo": "Logo {name}",

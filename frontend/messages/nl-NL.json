@@ -276,7 +276,7 @@
 	"callback_urls": "Callback-URL's",
 	"logout_callback_urls": "Callback-URL's voor afmelden",
 	"public_client": "Publieke client",
-	"public_clients_do_not_have_a_client_secret_and_use_pkce_instead": "Publieke clients hebben geen client secret en gebruiken in plaats daarvan PKCE. Schakel dit in als uw client een SPA of mobiele app is.",
+	"public_clients_description": "Publieke clients hebben geen client secret en gebruiken in plaats daarvan PKCE. Schakel dit in als uw client een SPA of mobiele app is.",
 	"pkce": "PKCE",
 	"public_key_code_exchange_is_a_security_feature_to_prevent_csrf_and_authorization_code_interception_attacks": "Public Key Code Exchange is een beveiligingsfunctie om CSRF- en autorisatiecode-onderscheppingsaanvallen te voorkomen.",
 	"name_logo": "{name} logo",
