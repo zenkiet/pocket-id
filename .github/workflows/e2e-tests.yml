@@ -116,9 +116,6 @@ jobs:
 
           docker logs -f pocket-id-sqlite &> /tmp/backend.log &
 
-      - name: Wait for backend to sync LDAP data
-        run: sleep 10
-
       - name: Run Playwright tests
         working-directory: ./frontend
         run: npx playwright test
@@ -227,9 +224,14 @@ jobs:
           -p 5432:5432 \
           postgres:17
 
+      - name: Setup and Configure LLDAP Server
+        run: |
+          chmod +x ./scripts/tests/setup-lldap.sh
+          ./scripts/tests/setup-lldap.sh
+
       - name: Wait for Postgres to start
         run: |
-          for i in {1..10}; do
+          for i in {1..5}; do
             if docker exec pocket-id-db pg_isready -U postgres; then
               echo "Postgres is ready"
               break
@@ -237,11 +239,6 @@ jobs:
             echo "Waiting for Postgres..."
             sleep 2
           done
-
-      - name: Setup and Configure LLDAP Server
-        run: |
-          chmod +x ./scripts/tests/setup-lldap.sh
-          ./scripts/tests/setup-lldap.sh
 
       - name: Run Docker Container with Postgres DB and LDAP
         run: |
@@ -254,9 +251,6 @@ jobs:
           pocket-id:test
 
           docker logs -f pocket-id-postgres &> /tmp/backend.log &
-
-      - name: Wait for backend to sync LDAP data
-        run: sleep 10
 
       - name: Run Playwright tests
         working-directory: ./frontend
