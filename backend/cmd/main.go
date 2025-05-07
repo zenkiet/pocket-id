@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/pocket-id/pocket-id/backend/internal/bootstrap"
+	_ "time/tzdata"
 )
 
 // @title Pocket ID API
