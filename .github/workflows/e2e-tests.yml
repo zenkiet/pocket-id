@@ -72,6 +72,23 @@ jobs:
       - name: Load Docker image
         run: docker load -i /tmp/docker-image.tar
 
+      - name: Cache LLDAP Docker image
+        uses: actions/cache@v3
+        id: lldap-cache
+        with:
+          path: /tmp/lldap-image.tar
+          key: lldap-stable-${{ runner.os }}
+
+      - name: Pull and save LLDAP image
+        if: steps.lldap-cache.outputs.cache-hit != 'true'
+        run: |
+          docker pull nitnelave/lldap:stable
+          docker save nitnelave/lldap:stable > /tmp/lldap-image.tar
+
+      - name: Load LLDAP image from cache
+        if: steps.lldap-cache.outputs.cache-hit == 'true'
+        run: docker load < /tmp/lldap-image.tar
+
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: npm ci
@@ -81,14 +98,26 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
-      - name: Run Docker Container with Sqlite DB
+      - name: Create Docker network
+        run: docker network create pocket-id-network
+
+      - name: Setup and Configure LLDAP Server
+        run: |
+          chmod +x ./scripts/tests/setup-lldap.sh
+          ./scripts/tests/setup-lldap.sh
+
+      - name: Run Docker Container with Sqlite DB and LDAP
         run: |
           docker run -d --name pocket-id-sqlite \
+          --network pocket-id-network \
           -p 80:80 \
           -e APP_ENV=test \
           pocket-id:test
 
           docker logs -f pocket-id-sqlite &> /tmp/backend.log &
+
+      - name: Wait for backend to sync LDAP data
+        run: sleep 10
 
       - name: Run Playwright tests
         working-directory: ./frontend
@@ -150,6 +179,23 @@ jobs:
         if: steps.postgres-cache.outputs.cache-hit == 'true'
         run: docker load < /tmp/postgres-image.tar
 
+      - name: Cache LLDAP Docker image
+        uses: actions/cache@v3
+        id: lldap-cache
+        with:
+          path: /tmp/lldap-image.tar
+          key: lldap-stable-${{ runner.os }}
+
+      - name: Pull and save LLDAP image
+        if: steps.lldap-cache.outputs.cache-hit != 'true'
+        run: |
+          docker pull nitnelave/lldap:stable
+          docker save nitnelave/lldap:stable > /tmp/lldap-image.tar
+
+      - name: Load LLDAP image from cache
+        if: steps.lldap-cache.outputs.cache-hit == 'true'
+        run: docker load < /tmp/lldap-image.tar
+
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
         with:
@@ -192,7 +238,12 @@ jobs:
             sleep 2
           done
 
-      - name: Run Docker Container with Postgres DB
+      - name: Setup and Configure LLDAP Server
+        run: |
+          chmod +x ./scripts/tests/setup-lldap.sh
+          ./scripts/tests/setup-lldap.sh
+
+      - name: Run Docker Container with Postgres DB and LDAP
         run: |
           docker run -d --name pocket-id-postgres \
           --network pocket-id-network \
@@ -203,6 +254,9 @@ jobs:
           pocket-id:test
 
           docker logs -f pocket-id-postgres &> /tmp/backend.log &
+
+      - name: Wait for backend to sync LDAP data
+        run: sleep 10
 
       - name: Run Playwright tests
         working-directory: ./frontend
